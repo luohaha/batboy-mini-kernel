@@ -1,0 +1,100 @@
+/*
+*  段gdt
+*
+*/
+#ifndef DESCRIPTOR_TABLES_H
+#define DESCRIPTOR_TABLES_H
+
+#include "common.h"
+
+struct gdt_entry_struct
+{
+	unsigned short limit_low;
+	unsigned short base_low;
+	unsigned char base_middle;
+	unsigned char access;
+	unsigned char granularity;
+	unsigned char base_high;
+}__attribute__((packed)) gdt_entry_struct;
+typedef struct gdt_entry_struct gdt_entry;
+
+struct gdt_ptr_struct
+{
+	unsigned short limit;
+	unsigned int base;
+}__attribute__((packed)) gdt_ptr_struct;
+typedef struct gdt_ptr_struct gdt_ptr;
+
+extern void gdt_flush(unsigned int);
+
+/*
+*   中断的实现的相关定义
+*
+*/
+void init_descriptor_tables();
+
+struct idt_entry_struct
+{
+	unsigned short base_low;//lower 16bit
+	unsigned short sel;   //kernel seg selector
+	unsigned char always0;
+	unsigned char flags;
+	unsigned short base_high;//high 16bit
+}__attribute__((packed)) idt_entry_struct;
+typedef struct idt_entry_struct idt_entry;
+
+struct idt_ptr_struct
+{
+	unsigned short limit;
+	unsigned int   base;
+}__attribute__((packed)) idt_ptr_struct;
+typedef struct idt_ptr_struct idt_ptr;
+//
+typedef struct registers
+{
+   unsigned int ds;                  // Data segment selector
+   unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
+   unsigned int int_no, err_code;    // Interrupt number and error code (if applicable)
+   unsigned int  eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
+}registers_t; 
+
+typedef void (*interrupt_handler_t)(registers_t *);
+
+extern void isr0 ();
+extern void isr1 ();
+extern void isr2 ();
+extern void isr3 ();
+extern void isr4 ();
+extern void isr5 ();
+extern void isr6 ();
+extern void isr7 ();
+extern void isr8 ();
+extern void isr9 ();
+extern void isr10();
+extern void isr11();
+extern void isr12();
+extern void isr13();
+extern void isr14();
+extern void isr15();
+extern void isr16();
+extern void isr17();
+extern void isr18();
+extern void isr19();
+extern void isr20();
+extern void isr21();
+extern void isr22();
+extern void isr23();
+extern void isr24();
+extern void isr25();
+extern void isr26();
+extern void isr27();
+extern void isr28();
+extern void isr29();
+extern void isr30();
+extern void isr31();
+// 32 ~ 255 用户自定义异常
+//void isr255();
+extern void idt_flush(unsigned int);
+void isr_handler(registers_t regs);
+//void register_int_handler(unsigned char num, idt_entry h);
+#endif
