@@ -6,10 +6,12 @@ int main()
 {
 	init_descriptor_tables();
 	monitor_clear();
-	printf("%d",23);
+	//printf("%d",23);
 	printf("\n",1);
 	printf("hello!\n",0);
-	asm volatile ("int $0x3");
-	//asm volatile("int $0x4");
+	init_timer(10);
+	asm volatile ("sti");
+	//asm volatile ("int $0x3");
+	//init_timer(50);
 	return 0;
 }

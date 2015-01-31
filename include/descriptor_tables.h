@@ -94,9 +94,31 @@ void isr28();
 void isr29();
 void isr30();
 void isr31();
+
+// IRQ:中断请求(Interrupt Request)
+void irq0();		// 电脑系统计时器
+void irq1(); 		// 键盘
+void irq2(); 		// 与 IRQ9 相接，MPU-401 MD 使用
+void irq3(); 		// 串口设备
+void irq4(); 		// 串口设备
+void irq5(); 		// 建议声卡使用
+void irq6(); 		// 软驱传输控制使用
+void irq7(); 		// 打印机传输控制使用
+void irq8(); 		// 即时时钟
+void irq9(); 		// 与 IRQ2 相接，可设定给其他硬件
+void irq10(); 		// 建议网卡使用
+void irq11(); 		// 建议 AGP 显卡使用
+void irq12(); 		// 接 PS/2 鼠标，也可设定给其他硬件
+void irq13(); 		// 协处理器使用
+void irq14(); 		// IDE0 传输控制使用
+void irq15(); 		// IDE1 传输控制使用
 // 32 ~ 255 用户自定义异常
 //void isr255();
 extern void idt_flush(unsigned int);
+//异常发生时调用的函数
 void isr_handler(registers_t *regs);
+//中断请求时调用的函数
+void irq_handler(registers_t *regs);
+//注册对应中断号的中断处理函数
 void register_int_handler(unsigned char num, interrupt_handler_t h);
 #endif

@@ -15,6 +15,15 @@
 		jmp  isr_common_stub
 %endmacro
 
+%macro IRQ 2
+	[GLOBAL irq%1]
+	irq%1:
+		cli;
+		push byte 0
+		push byte %2
+		jmp irq_common_stub
+%endmacro
+
 ISR_NOERR 0
 ISR_NOERR 1
 ISR_NOERR 2
@@ -51,6 +60,23 @@ ISR_NOERR 31
 ; 32 ~ 255 用户自定
 ;ISR_NOERR 255
 
+IRQ   0,    32 	; 电脑系统计时器
+IRQ   1,    33 	; 键盘
+IRQ   2,    34 	; 与 IRQ9 相接，MPU-401 MD 使用
+IRQ   3,    35 	; 串口设备
+IRQ   4,    36 	; 串口设备
+IRQ   5,    37 	; 建议声卡使用
+IRQ   6,    38 	; 软驱传输控制使用
+IRQ   7,    39 	; 打印机传输控制使用
+IRQ   8,    40 	; 即时时钟
+IRQ   9,    41 	; 与 IRQ2 相接，可设定给其他硬件
+IRQ  10,    42 	; 建议网卡使用
+IRQ  11,    43 	; 建议 AGP 显卡使用
+IRQ  12,    44 	; 接 PS/2 鼠标，也可设定给其他硬件
+IRQ  13,    45 	; 协处理器使用
+IRQ  14,    46 	; IDE0 传输控制使用
+IRQ  15,    47 	; IDE1 传输控制使用
+
 [GLOBAL isr_common_stub]
 [EXTERN isr_handler]
 
@@ -67,6 +93,36 @@ isr_common_stub:
 
 	push esp
    	call isr_handler
+	add esp, 4
+
+   	pop ebx        ; reload the original data segment descriptor
+   	mov ds, bx
+   	mov es, bx
+   	mov fs, bx
+   	mov gs, bx
+	mov ss, bx
+
+   	popa                     ; Pops edi,esi,ebp...
+   	add esp, 8     ; Cleans up the pushed error code and pushed ISR number
+	sti
+   	iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+
+[GLOBAL irq_common_stub]
+[EXTERN irq_handler]
+
+irq_common_stub:
+	pusha
+	mov ax,ds
+	push eax
+	mov ax, 0x10  ; load the kernel data segment descriptor
+   	mov ds, ax
+   	mov es, ax
+   	mov fs, ax
+   	mov gs, ax
+        mov ss, ax
+
+	push esp
+   	call irq_handler
 	add esp, 4
 
    	pop ebx        ; reload the original data segment descriptor
