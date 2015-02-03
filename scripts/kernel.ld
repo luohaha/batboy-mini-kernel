@@ -7,32 +7,45 @@ SECTIONS
 	/*
 	*段起始，text是代码段，data是数据段
 	*/
+	PROVIDE( kern_start = 0xC0100000 );
 	. =0x100000;
-	.text :
+	.init.text :
+	{
+		*(.init.text)
+		. = ALIGN(4096);
+	}
+	.init.data :
+	{
+		*(.init.data)
+		. = ALIGN(4096);
+	}
+	. += 0xC0000000;
+	.text : AT(ADDR(.text) - 0xC0000000)
 	{
 		*(.text)
 		. = ALIGN(4096);
 	}
-	.data :
+	.data : AT(ADDR(.data) - 0xC0000000)
 	{
 		*(.data)
 		*(.rodata)
 		. = ALIGN(4096);
 	}
-	.bss :
+	.bss : AT(ADDR(.bss) - 0xC0000000)
 	{
 		*(.bss)
 		. = ALIGN(4096);
 	}
-	.stab :
+	.stab : AT(ADDR(.stab) - 0xC0000000)
 	{
 		*(.stab)
 		. = ALIGN(4096);
 	}
-	.stabstr :
+	.stabstr : AT(ADDR(.stabstr) - 0xC0000000)
 	{
 		*(.stabstr)
 		. = ALIGN(4096);
 	}
+	PROVIDE( kern_end = . );
 	/DISCARD/ : { *(.comment) *(.eh_frame) }
 }

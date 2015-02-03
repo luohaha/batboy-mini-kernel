@@ -10,10 +10,10 @@ interrupt_handler_t interrupt_handlers[256];//中断处理函数的指针数组
 void init_idt()
 {
 	
-	memset((unsigned int *)&interrupt_handlers,0,sizeof(interrupt_handler_t)*256);
+	memset((unsigned char *)&interrupt_handlers,0,sizeof(interrupt_handler_t)*256);
 	the_idt_ptr.limit=sizeof(idt_entry)*256-1;
 	the_idt_ptr.base=(unsigned int)&idt_entries;
-	memset((unsigned int *)&idt_entries,0,sizeof(idt_entry)*256);
+	memset((unsigned char *)&idt_entries,0,sizeof(idt_entry)*256);
 	//////////////////////////////////////
 	//初始化irq以及对irq中断号重新布局
 	//0x20和0xA0口分别为master pic 与slaver pic的控制端口

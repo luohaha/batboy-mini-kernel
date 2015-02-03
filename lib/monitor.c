@@ -1,8 +1,9 @@
 #include "monitor.h"
-
+#include "virtual_memory.h"
 unsigned short cursor_x=0;
 unsigned short cursor_y=0;
-unsigned short *video_memory=(unsigned short*)0xB8000;
+unsigned short *video_memory=(unsigned short*)(0xB8000+KERNEL_OFFSET);
+//unsigned short *video_memory=(unsigned short*)(0xB8000);
 static void move_cursor()
 //刷新光标位置
 {
@@ -98,22 +99,27 @@ void monitor_str(char *c)
 }
 void monitor_hex(unsigned int c)
 {
-	char str[10];
+	char str[8];
 	int i=0;
-	while(c)
+	for(i=0;i<8;i++)
 	{
-		str[i]=(char)(c%10+48);
-		c/=10;
-		i++;
+		str[i]=(char)(c%16+48);
+		if(str[i]>=':')
+			str[i]+=7;
+		c/=16;
 	}	
 	int j;
-	for(j=i-1;j>=0;j--)
+	for(j=7;j>=0;j--)
 	{
 		monitor_put(str[j]);
 	}
 }
 void monitor_dec(unsigned int c)
 {
+	if(c==0)
+	{
+		monitor_put('0');
+	}
 	int i;
 	unsigned int num=1000000000;
 	int flag=0;
@@ -123,8 +129,8 @@ void monitor_dec(unsigned int c)
 		if(tmp!=0)
 		{
 			flag=1;
-			char c=(char)(tmp+48);
-			monitor_put(c);
+			char ch=(char)(tmp+48);
+			monitor_put(ch);
 		}
 		else
 		{
