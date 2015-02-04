@@ -38,6 +38,7 @@ void switch_page_dir(unsigned int addr)
 	asm volatile ("mov %0, %%cr3" : : "r" (addr));
 }
 void map(page_dir_entry *pde_now, unsigned int virtual_addr,unsigned physics_addr,unsigned int flags)
+//这个flags就是页表项的说明信息，如 PAGE_P和PAGE_RW
 {
 	unsigned int dir_num=GET_PDE_NUM(virtual_addr);
 	page_table_entry *pte=(page_table_entry *)(pde_now[dir_num]&PAGE_MASK);
@@ -97,7 +98,7 @@ void page_fault(registers_t *regs)
 	unsigned int cr2=0;
 	asm volatile ("mov %%cr2, %0" : "=r" (cr2));
 	printf("virtual err addr:   ",0);
-	printf("%d",cr2);
+	printf("%h",cr2);
 	printf("\n",0);
 	return;
 }

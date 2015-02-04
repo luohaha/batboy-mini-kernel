@@ -4,6 +4,7 @@
 #include "common.h"
 #include "memory_manager.h"
 #include "virtual_memory.h"
+#include "memory_pool.h"
 int main();
 multiboot_struct *glb_mboot_ptr;//切换到分页后要用的multiboot指针
 char kern_stack[STACK_SIZE];
@@ -54,22 +55,25 @@ int main()
 	printf("\n",0);
 	printf("memory use(KB):  ",0);
 	printf("%h",(kern_end-kern_start+1023)/1024);
-	asm volatile ("sti");
-	print_memory();	
+//	asm volatile ("sti");
+//	print_memory();	
 	//asm volatile ("int $0x3");
 	//init_timer(50);
 	init_memory();
+	init_virtual_memory();
+	init_pool();
 	printf("\n---------------------------------------\n",0);
 //	printf("now usefull pages is:  ",0);
 //	printf("%d",page_count);
 	printf("\n",0);
-        int i;
+ /*       int i;
 	for(i=0;i<4;i++)
 	{
 		printf("0x",0);
 		printf("%h",memory_alloc());
 		printf("\n",0);
-	}
+	}*/
+	pool_test();
 	while(1)
 	{
 		asm volatile ("hlt");
