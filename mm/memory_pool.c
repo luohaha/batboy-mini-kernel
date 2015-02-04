@@ -18,27 +18,38 @@ void init_pool()
 	leader=(block_head *)pool_top;
 	unsigned int newpage=memory_alloc();
 	map(pde_kern,(unsigned int)leader,newpage,PAGE_P|PAGE_RW);
-	leader->length=PAGE_SIZE;
+	leader->length=sizeof(block_head);
 	leader->used=1;
 	leader->pre=0;
 	leader->next=0;
+	pool_top_page=POOL_BEGIN+PAGE_SIZE;
+	pool_top=POOL_BEGIN+leader->length;
 }
 void* kmalloc(unsigned int length)
 //申请内存函数,返回可用空间的首地址
 {
 	block_head *point=leader;//查找可用块的指针
-	block_head *tmppre;//用来暂存point的上一个
+	block_head *tmppre=point;//用来暂存point的上一个
 	while(point!=0)
 	{
-		if(point->used==0&&point->length-sizeof(block_head)*2>=length)
+		//if(point->used==0&&point->length>=sizeof(block_head)*2+length)
+		if(point->used==0&&point->length>=length+sizeof(block_head))
 		//如果能找到一个合适内存块		
 		{
-			point->used=1;
-			unsigned int tmp=point->length;
-			point->length=length+sizeof(block_head);
-			//告诉cut函数，被截断后新的起点和长度,还有它的前面的block地址
-			cut((unsigned int)point+point->length,tmp-point->length,point);
-			return point+sizeof(block_head);
+			if(point->length>=sizeof(block_head)*2+length)
+			{
+				point->used=1;
+				unsigned int tmp=point->length;
+				point->length=length+sizeof(block_head);
+				//告诉cut函数，被截断后新的起点和长度,还有它的前面的block地址
+				cut((unsigned int)point+point->length,tmp-point->length,point);
+				return (void *)((unsigned int)point+sizeof(block_head));
+			}
+			else
+			{
+				point->used=1;
+				return (void *)((unsigned int)point+sizeof(block_head));
+			}
 		}
 		//如果不能，就继续往下找
 		tmppre=point;
@@ -115,6 +126,7 @@ void* alloc(unsigned int length,block_head *prev)
 		new->length=length;
 		new->next=0;
 		new->pre=prev;
+		prev->next=new;
 		pool_top+=length;
 		return (void *)((unsigned int)pool_top-length+sizeof(block_head));
 		
@@ -134,6 +146,7 @@ void* alloc(unsigned int length,block_head *prev)
 		new->length=length;
 		new->next=0;
 		new->pre=prev;
+		prev->next=new;
 		pool_top+=length;
 		return (void *)((unsigned int)pool_top-length+sizeof(block_head));
 	}
@@ -143,13 +156,16 @@ void pool_test()
 	void *addr=kmalloc(50);
 	printf("\n分配了50B的地址为:\n",0);
 	printf("%h",(unsigned int)addr);
-	addr=kmalloc(500);
-	printf("\n分配了500B的地址为:\n",0);
-	printf("%h",(unsigned int)addr);
-	addr=kmalloc(5000);
-	printf("\n分配了5000B的地址为:\n",0);
-	printf("%h",(unsigned int)addr);
+	void *addr2=kmalloc(50);
+	printf("\n分配了50B的地址为:\n",0);
+	printf("%h",(unsigned int)addr2);
+	void *addr4=kmalloc(50);
+	printf("\n分配了50B的地址为:\n",0);
+	printf("%h",(unsigned int)addr4);
 	kfree((unsigned int)addr);
-	printf("\n释放了5000B的地址为:\n",0);
-	printf("%h",(unsigned int)addr);
+//	kfree((unsigned int)addr4);
+	kfree((unsigned int)addr2);
+	void *addr3=kmalloc(70);
+	printf("\n了2B的地址为:\n",0);
+	printf("%h",(unsigned int)addr3);
 }
