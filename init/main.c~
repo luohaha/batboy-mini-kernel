@@ -51,15 +51,16 @@ int main()
 {
 	init_descriptor_tables();
 	monitor_clear();
-	printf("hello batboy!\n",0);
-	printf("\n--------------memory-------------------\n",0);
+	printf("hello!\n",0);
 	printf("%h",kern_start);
 	printf("\n",0);
 	printf("%h",kern_end);
 	printf("\n",0);
 	printf("memory use(KB):  ",0);
 	printf("%h",(kern_end-kern_start+1023)/1024);
+	printf("\n-----------------------------------\n",0);
 	glb_mboot_ptr->flags|=0x8;
+	printf("%h",(unsigned int)glb_mboot_ptr->mods_count);
 	unsigned int initrd_location = *((unsigned int*)glb_mboot_ptr->mods_addr);
 	unsigned int initrd_end = *(unsigned int*)(glb_mboot_ptr->mods_addr+4);
 	//placement_address = initrd_end;
@@ -71,10 +72,10 @@ int main()
 	init_virtual_memory();
 	init_pool();
 	fs_root = initialise_initrd(initrd_location+KERNEL_OFFSET);
-	printf("\n--------------memory pool---------------------\n",0);
+	printf("\n---------------------------------------\n",0);
 //	printf("now usefull pages is:  ",0);
 //	printf("%d",page_count);
-//	printf("\n",0);
+	printf("\n",0);
  /*       int i;
 	for(i=0;i<4;i++)
 	{
@@ -83,35 +84,6 @@ int main()
 		printf("\n",0);
 	}*/
 	pool_test();
-	printf("\n--------------read file----------------------\n",0);
-	int i = 0;
-    	struct dirent *node = 0;
-//	printf("%h",(unsigned int)glb_mboot_ptr->mods_count);
-//	printf("loaded\n",0);
-    	while ( (node = readdir_fs(fs_root, i)) != 0)
-    	{
-        	printf("Found file ",0);
-        	printf(node->name,0);
-        	fs_node_t *fsnode = finddir_fs(fs_root, node->name);
-
-        	if ((fsnode->flags&0x7) == FS_DIRECTORY)
-        	{
-            		printf("\n\t(directory)\n",0);
-        	}
-        	else
-        	{
-            		printf("\n\t contents:  ",0);
-            		char buf[256];
-            		unsigned int sz = read_fs(fsnode, 0, 256, buf);
-            		int j;
-            		for (j = 0; j < sz; j++)
-                		monitor_put(buf[j]);
-            
-            		printf("\n",0);
-        	}
-        	i++;
-    	}
-	printf("---------------------------------------\n",0);
 	while(1)
 	{
 		asm volatile ("hlt");

@@ -154,18 +154,22 @@ void* alloc(unsigned int length,block_head *prev)
 void pool_test()
 {
 	void *addr=kmalloc(50);
-	printf("\n分配了50B的地址为:\n",0);
+	printf("\nkalloc 50B, addr: ",0);
 	printf("%h",(unsigned int)addr);
 	void *addr2=kmalloc(50);
-	printf("\n分配了50B的地址为:\n",0);
+	printf("\nkalloc 50B, addr: ",0);
 	printf("%h",(unsigned int)addr2);
 	void *addr4=kmalloc(50);
-	printf("\n分配了50B的地址为:\n",0);
+	printf("\nkalloc 50B, addr: ",0);
 	printf("%h",(unsigned int)addr4);
 	kfree((unsigned int)addr);
-//	kfree((unsigned int)addr4);
+	printf("\nkfree 50B, addr: ",0);
+	printf("%h",(unsigned int)addr);
+	
 	kfree((unsigned int)addr2);
+	printf("\nkfree 50B, addr: ",0);
+	printf("%h",(unsigned int)addr2);
 	void *addr3=kmalloc(70);
-	printf("\n了2B的地址为:\n",0);
+	printf("\nkalloc 2B, addr: ",0);
 	printf("%h",(unsigned int)addr3);
 }
