@@ -89,6 +89,7 @@ int main()
 //	printf("%h",(unsigned int)glb_mboot_ptr->mods_count);
 //	printf("loaded\n",0);
     	while ( (node = readdir_fs(fs_root, i)) != 0)
+	//读出根目录下的所有文件，从0号开始
     	{
         	printf("Found file ",0);
         	printf(node->name,0);
@@ -102,9 +103,16 @@ int main()
         	{
             		printf("\n\t contents:  ",0);
             		char buf[256];
+			char *change="can i fuck you all the time?i don't think so, but i have to try!\n yes you can!";
+			unsigned int zs = write_fs(fsnode,0,256,change);
             		unsigned int sz = read_fs(fsnode, 0, 256, buf);
+			printf("write size:  ",0);
+			printf("%d",zs);
+			printf("read size:  ",0);
+			printf("%d",sz);
+			printf("\n");
             		int j;
-            		for (j = 0; j < sz; j++)
+            		for (j = 0; j < sz+15; j++)
                 		monitor_put(buf[j]);
             
             		printf("\n",0);
