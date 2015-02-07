@@ -156,7 +156,7 @@ int main()
         	}
         	i++;
     	}
-	printf("---------------------------------------\n",0);
+	printf("---------------kernel thread test-------------------\n",0);
 	init_schedule();
 	asm volatile ("sti");
 	init_timer(200);
