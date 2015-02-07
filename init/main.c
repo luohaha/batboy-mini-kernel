@@ -156,10 +156,12 @@ int main()
         	}
         	i++;
     	}
+	
 	printf("---------------kernel thread test-------------------\n",0);
 	init_schedule();
-	asm volatile ("sti");
 	init_timer(200);
+	asm volatile ("sti");
+//	fork();
 //	kernel_thread(stest+KERNEL_OFFSET,0);
 	kernel_thread(stest);
 	kernel_thread(stest2);
@@ -171,6 +173,7 @@ int main()
 			printf("b",0);
 			haha=0;
 		}
+		
 	}
 }
 

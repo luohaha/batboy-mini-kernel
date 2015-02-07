@@ -102,3 +102,54 @@ void page_fault(registers_t *regs)
 	printf("\n",0);
 	return;
 }
+
+/****************************************实现页目录和页表复制，进程切换*****************************************/
+///////////////////////未实现进程，而且这两个函数存在页面访问出错的问题
+static page_table_entry *clone_table(page_table_entry *prev,unsigned int *physicsAddr)
+//新建一个页表，返回虚拟地址和物理地址
+{
+	page_table_entry *newtable=(page_table_entry*)kmalloc(PAGE_SIZE);
+	get_mapping(pde_kern,(unsigned int)newtable,physicsAddr);//获取新页表的物理地址
+	memset(newtable,0,PAGE_SIZE);
+	int i;
+	for(i=0;i<1024;i++)
+	//复制1024个页表项
+	{
+		if(prev[i]!=0)
+		{
+			newtable[i]=prev[i];
+			newtable[i]&=0x00000fff;//确保只改变低12位
+			unsigned int tmpaddr=memory_alloc();
+			newtable[i]|=(tmpaddr&PAGE_MASK);//这里只能使用物理地址
+			copy_page(prev[i]&PAGE_MASK,newtable[i]&PAGE_MASK);//这里使用物理地址来复制
+		}
+	}
+	return newtable;
+}
+page_dir_entry *clone_dir(page_dir_entry *prev)
+//fanhui wuli dizhi
+{
+	page_dir_entry *new_dir = (page_dir_entry *)kmalloc(PAGE_SIZE);
+	unsigned int physicsAddr;
+	get_mapping(pde_kern,(unsigned int)new_dir,&physicsAddr);
+	memset(new_dir,0,PAGE_SIZE);
+	int i;
+	for(i=0 ; i<1024; i++)
+	{
+		if(!prev[i])
+			continue;
+		if(pde_kern[i]==prev[i])
+		//内存中相同的区域，可重入
+		{
+			new_dir[i]=pde_kern[i];
+		}
+		else
+		{
+			unsigned int tmpaddr;
+			clone_table(prev[i]&PAGE_MASK,&tmpaddr);
+			new_dir[i]=(tmpaddr&PAGE_MASK)|(prev[i]&0xfff);
+		}
+	}
+	return physicsAddr;
+}
+

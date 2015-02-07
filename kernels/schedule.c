@@ -13,6 +13,8 @@ void init_schedule()
 	current_task = (task_t*)(kern_stack_top-STACK_SIZE);
 	current_task->pid=current_pid++;
 	current_task->state=TASK_RUNNING;
+	//current_task->mm=(unsigned int)pde_kern-KERNEL_OFFSET;
+	//未实现进程，所以还用不到独立内存空间
 	current_task->mm=0;
 	current_task->next=current_task;//只有一个任务
 	running_task_queue=current_task;
@@ -20,11 +22,18 @@ void init_schedule()
 
 void schedule()
 {
-//	if(current_task&&current_task->next!=current_task)
-	if(current_task)
+	if(current_task&&current_task->next!=current_task)
+//	if(current_task)
 	{
 		task_t *prev_task = current_task;
 		current_task=current_task->next;
 		task_switch(&(prev_task->context),&(current_task->context));
+	//	switch_page_dir(current_task->mm);
+	//	未实现进程，不用切换内存空间
 	}
+}
+
+int getpid()
+{
+	return current_task->pid;
 }

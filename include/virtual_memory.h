@@ -67,4 +67,6 @@ void unmap(page_dir_entry *pde_now,unsigned int virtual_addr);
 //如果physics_addr不为空指针，则把物理地址写入physics_addr
 unsigned int get_mapping(page_dir_entry *pde_now,unsigned int virtual_addr,unsigned int *physics_addr);
 void page_fault(registers_t *regs);
+//切换进程未实现，暂时用不到
+page_dir_entry *clone_dir(page_dir_entry*);//复制页目录项
 #endif

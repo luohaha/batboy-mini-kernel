@@ -20,6 +20,30 @@ int kernel_thread(int (*fn)(void*))
 	point->next=new_task;
 	return new_task->pid;//返回新任务的id
 }
+///////////////
+//////////////fork()未完成，任务切换有问题，切换后系统会崩溃
+int fork()
+{
+	asm volatile("cli");
+	task_t *new_task = (task_t *)kmalloc(STACK_SIZE);
+	memset(new_task,0,sizeof(task_t));
+	//新建页目录
+//	page_dir_entry *newdir = clone_dir(current_task->mm);
+	new_task->pid=current_pid++;
+	new_task->state=TASK_RUNNING;
+	//页目录赋值
+//	new_task->mm=newdir;
+	new_task->mm=current_task->mm;
+	new_task->context=current_task->context;
+	new_task->next=running_task_queue;
+	task_t *point=running_task_queue;
+	while(point->next!=running_task_queue)
+		point=point->next;
+	point->next=new_task;
+//	asm volatile ("sti");
+	return new_task->pid;//返回新任务的id
+
+}
 void kthread_exit()
 {
 	//把当前任务从running_task_queue队列中移除

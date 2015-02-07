@@ -44,4 +44,7 @@ void kthread_exit();
 void init_schedule();//初始化调度
 void schedule();//调度
 void task_switch(context_t *prev, context_t *next);//任务切换
+//
+int fork();
+int getpid();
 #endif
