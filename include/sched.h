@@ -1,6 +1,11 @@
 #ifndef SCHED_H
 #define SCHED_H
 
+#include "common.h"
+#include "memory_manager.h"
+#include "virtual_memory.h"
+#include "memory_pool.h"
+
 #define TASK_RUNNING      0       //任务可以被调度成为当前任务，就绪状态
 #define TASK_SLEEP        1       //睡眠，或叫做阻塞
 #define TASK_ZIMBIE       2       //任务去世，但id未注销
@@ -25,17 +30,18 @@ typedef struct task_struct{
 	unsigned char state;//状态
 	context_t  context;//上下文
 	page_dir_entry *mm;//页目录项起始地址，轻量级进程用不到
-	task_t     *next;//下一个任务
+	struct task_struct *next;//下一个任务
 } task_t;
 
-unsigned int current_pid; //当前运行的任务号
-struct task_struct *running_task_queue;//就绪任务队列
-struct task_struct *sleep_task_queue;//阻塞任务队列
-struct task_struct *current_task;//当前运行任务
-int kernel_thread(int (*fn)(void*), void *arg);
+extern unsigned int kern_stack_top;//初始主任务的堆栈顶
+extern unsigned int current_pid; //当前运行的任务号
+extern task_t *running_task_queue;//就绪任务队列
+extern task_t *sleep_task_queue;//阻塞任务队列
+extern task_t *current_task;//当前运行任务
+int kernel_thread(int (*fn)(void*));
 void kthread_exit();
 
 void init_schedule();//初始化调度
 void schedule();//调度
-void task_switch(struct context_t *prev, struct context_t *next);//任务切换
+void task_switch(context_t *prev, context_t *next);//任务切换
 #endif

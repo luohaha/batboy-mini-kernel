@@ -7,8 +7,13 @@
 #include "memory_pool.h"
 #include "fs.h"
 #include "initrd.h"
+#include "sched.h"
+
 extern unsigned int placement_address;
+//extern unsigned int kern_stack_top;
 int main();
+int haha=0;
+//void stest();
 multiboot_struct *glb_mboot_ptr;//切换到分页后要用的multiboot指针
 char kern_stack[STACK_SIZE];
 //建立临时页目录项，页表项，用来指向两个页
@@ -39,7 +44,7 @@ __attribute__((section(".init.text"))) void entry()
 	cr0|=0x80000000;
 	asm volatile ("mov %0, %%cr0" : : "r" (cr0));
 	//切换内核栈
-	unsigned int kern_stack_top=((unsigned int)kern_stack+STACK_SIZE) & 0xFFFFFFF0;
+	kern_stack_top=((unsigned int)kern_stack+STACK_SIZE) & 0xFFFFFFF0;
 	asm volatile ("mov %0, %%esp\n\t"
 			"xor %%ebp, %%ebp" : : "r" (kern_stack_top));
 	glb_mboot_ptr=glb_mboot_ptr_tmp + KERNEL_OFFSET;
@@ -47,6 +52,38 @@ __attribute__((section(".init.text"))) void entry()
 	main();
 }
 
+void stest()
+{
+	unsigned int i=0;
+	while(1)
+	{
+	i++;
+	if(haha==0)
+	{
+		printf("a",0);
+		haha=1;
+	}
+	if(i==0x1000000)
+		break;
+	}
+	return ;
+}
+void stest2()
+{
+	unsigned int i=0;
+	while(1)
+	{
+	i++;
+	if(haha==1)
+	{
+		printf("c",0);
+		haha=2;
+	}
+	if(i==0x10000)
+		break;
+	}
+	return ;
+}
 int main()
 {
 	init_descriptor_tables();
@@ -66,7 +103,7 @@ int main()
 //	asm volatile ("sti");
 //	print_memory();	
 	//asm volatile ("int $0x3");
-	//init_timer(50);
+	
 	init_memory();
 	init_virtual_memory();
 	init_pool();
@@ -120,8 +157,20 @@ int main()
         	i++;
     	}
 	printf("---------------------------------------\n",0);
+	init_schedule();
+	asm volatile ("sti");
+	init_timer(200);
+//	kernel_thread(stest+KERNEL_OFFSET,0);
+	kernel_thread(stest);
+	kernel_thread(stest2);
 	while(1)
 	{
-		asm volatile ("hlt");
+//		asm volatile ("hlt");
+		if(haha==2)
+		{
+			printf("b",0);
+			haha=0;
+		}
 	}
 }
+
