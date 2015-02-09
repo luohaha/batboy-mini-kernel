@@ -94,7 +94,8 @@ void isr28();
 void isr29();
 void isr30();
 void isr31();
-
+//系统调用
+void isr128();
 // IRQ:中断请求(Interrupt Request)
 void irq0();		// 电脑系统计时器
 void irq1(); 		// 键盘

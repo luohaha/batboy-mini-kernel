@@ -67,6 +67,8 @@ void init_idt()
 	idt_set_gate(29,(unsigned int)isr29,0x08,0x8E);
 	idt_set_gate(30,(unsigned int)isr30,0x08,0x8E);
 	idt_set_gate(31,(unsigned int)isr31,0x08,0x8E);
+	//系统中断
+	idt_set_gate(128,(unsigned int)isr128,0x08,0x8E);
 	//中断请求中断结构初始化
         idt_set_gate(32, (unsigned int)irq0, 0x08, 0x8E);
 	idt_set_gate(33, (unsigned int)irq1, 0x08, 0x8E);

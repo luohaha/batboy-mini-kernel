@@ -58,7 +58,7 @@ ISR_NOERR 29
 ISR_NOERR 30
 ISR_NOERR 31
 ; 32 ~ 255 用户自定
-;ISR_NOERR 255
+ISR_NOERR 128
 
 IRQ   0,    32 	; 电脑系统计时器
 IRQ   1,    33 	; 键盘

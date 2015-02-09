@@ -13,3 +13,10 @@ gdt_flush:
 	jmp 0x08:.flush
 .flush:
 	ret
+
+[GLOBAL tss_flush]
+
+tss_flush:
+	mov ax, 0x2b ;tss段起始是0x28，后两位置1，得0x2b
+	ltr ax
+	ret

@@ -1,5 +1,5 @@
 /*
-	这就是内核最开始的地方，也是操作系统开始的地方
+	主程序
 */
 #include "common.h"
 #include "memory_manager.h"
@@ -8,7 +8,7 @@
 #include "fs.h"
 #include "initrd.h"
 #include "sched.h"
-
+#include "syscall.h"
 extern unsigned int placement_address;
 //extern unsigned int kern_stack_top;
 int main();
@@ -147,7 +147,7 @@ int main()
 			printf("%d",zs);
 			printf("read size:  ",0);
 			printf("%d",sz);
-			printf("\n");
+			printf("\n",0);
             		int j;
             		for (j = 0; j < sz+15; j++)
                 		monitor_put(buf[j]);
@@ -156,18 +156,23 @@ int main()
         	}
         	i++;
     	}
-	
-	printf("---------------kernel thread test-------------------\n",0);
-	init_schedule();
-	init_timer(200);
 	asm volatile ("sti");
-//	fork();
-//	kernel_thread(stest+KERNEL_OFFSET,0);
+	init_schedule();
+//	printf("--------------systerm call test-------------------\n",0);
+	init_syscall();
+//	switch_usermode();
+//	asm volatile ("sti");
+//	syscall_printf("I will not give up my hope!\n",0);	
+
+	printf("---------------kernel thread test-------------------\n",0);
+	
+	init_timer(200);
+	
 	kernel_thread(stest);
 	kernel_thread(stest2);
 	while(1)
 	{
-//		asm volatile ("hlt");
+	//	asm volatile ("hlt");
 		if(haha==2)
 		{
 			printf("b",0);
