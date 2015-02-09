@@ -42,10 +42,14 @@ void monitor_put(char c)
 	unsigned char forecolor=0x4;//背景色为红色
 	unsigned short color=(backcolor<<4)|(forecolor&0x0f);
 	unsigned short *location;//要存放光标所在处的地址
-        if(c==0x08&&cursor_x>=0)
+        if(c==0x08&&cursor_x>13)
 	{
 		//退格键
 		cursor_x--;
+		location=video_memory+(cursor_y*80+cursor_x);//光标处地址
+		char ttmp=' ';
+		*location=ttmp|(color<<8);//该显示的值
+
 	}
 	else if(c==0x09)
 	{

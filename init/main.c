@@ -9,10 +9,10 @@
 #include "initrd.h"
 #include "sched.h"
 #include "syscall.h"
+#include "keyboard.h"
 extern unsigned int placement_address;
 //extern unsigned int kern_stack_top;
 int main();
-int haha=0;
 //void stest();
 multiboot_struct *glb_mboot_ptr;//切换到分页后要用的multiboot指针
 char kern_stack[STACK_SIZE];
@@ -52,50 +52,13 @@ __attribute__((section(".init.text"))) void entry()
 	main();
 }
 
-void stest()
-{
-	unsigned int i=0;
-	while(1)
-	{
-	i++;
-	if(haha==0)
-	{
-		printf("a",0);
-		haha=1;
-	}
-	if(i==0x1000000)
-		break;
-	}
-	return ;
-}
-void stest2()
-{
-	unsigned int i=0;
-	while(1)
-	{
-	i++;
-	if(haha==1)
-	{
-		printf("c",0);
-		haha=2;
-	}
-	if(i==0x10000)
-		break;
-	}
-	return ;
-}
 int main()
 {
 	init_descriptor_tables();
 	monitor_clear();
-	printf("hello batboy!\n",0);
-	printf("\n--------------memory-------------------\n",0);
-	printf("%h",kern_start);
-	printf("\n",0);
-	printf("%h",kern_end);
-	printf("\n",0);
-	printf("memory use(KB):  ",0);
-	printf("%h",(kern_end-kern_start+1023)/1024);
+	printf("welcome to batboy-mini-os!\n",0);
+	printf("You can use 'help' to find more command!\n",0);
+	
 	glb_mboot_ptr->flags|=0x8;
 	unsigned int initrd_location = *((unsigned int*)glb_mboot_ptr->mods_addr);
 	unsigned int initrd_end = *(unsigned int*)(glb_mboot_ptr->mods_addr+4);
@@ -108,54 +71,6 @@ int main()
 	init_virtual_memory();
 	init_pool();
 	fs_root = initialise_initrd(initrd_location+KERNEL_OFFSET);
-	printf("\n--------------memory pool---------------------\n",0);
-//	printf("now usefull pages is:  ",0);
-//	printf("%d",page_count);
-//	printf("\n",0);
- /*       int i;
-	for(i=0;i<4;i++)
-	{
-		printf("0x",0);
-		printf("%h",memory_alloc());
-		printf("\n",0);
-	}*/
-	pool_test();
-	printf("\n--------------read file----------------------\n",0);
-	int i = 0;
-    	struct dirent *node = 0;
-//	printf("%h",(unsigned int)glb_mboot_ptr->mods_count);
-//	printf("loaded\n",0);
-    	while ( (node = readdir_fs(fs_root, i)) != 0)
-	//读出根目录下的所有文件，从0号开始
-    	{
-        	printf("Found file ",0);
-        	printf(node->name,0);
-        	fs_node_t *fsnode = finddir_fs(fs_root, node->name);
-
-        	if ((fsnode->flags&0x7) == FS_DIRECTORY)
-        	{
-            		printf("\n\t(directory)\n",0);
-        	}
-        	else
-        	{
-            		printf("\n\t contents:  ",0);
-            		char buf[256];
-			char *change="can i fuck you all the time?i don't think so, but i have to try!\n yes you can!";
-			unsigned int zs = write_fs(fsnode,0,256,change);
-            		unsigned int sz = read_fs(fsnode, 0, 256, buf);
-			printf("write size:  ",0);
-			printf("%d",zs);
-			printf("read size:  ",0);
-			printf("%d",sz);
-			printf("\n",0);
-            		int j;
-            		for (j = 0; j < sz+15; j++)
-                		monitor_put(buf[j]);
-            
-            		printf("\n",0);
-        	}
-        	i++;
-    	}
 	asm volatile ("sti");
 	init_schedule();
 //	printf("--------------systerm call test-------------------\n",0);
@@ -164,20 +79,15 @@ int main()
 //	asm volatile ("sti");
 //	syscall_printf("I will not give up my hope!\n",0);	
 
-	printf("---------------kernel thread test-------------------\n",0);
-	
-	init_timer(200);
-	
-	kernel_thread(stest);
-	kernel_thread(stest2);
+	init_keyboard();
 	while(1)
 	{
-	//	asm volatile ("hlt");
-		if(haha==2)
+		asm volatile ("hlt");
+	/*	if(haha==2)
 		{
 			printf("b",0);
 			haha=0;
-		}
+		}*/
 		
 	}
 }
