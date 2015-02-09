@@ -175,7 +175,7 @@ void show_file()
     	while ( (node = readdir_fs(fs_root, i)) != 0)
 	//读出根目录下的所有文件，从0号开始
     	{
-        	printf("Found file ",0);
+        	printf("file:  ",0);
         	printf(node->name,0);
         	fs_node_t *fsnode = finddir_fs(fs_root, node->name);
 

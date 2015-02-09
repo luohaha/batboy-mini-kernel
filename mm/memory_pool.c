@@ -170,6 +170,9 @@ void pool_test()
 	printf("\nkfree 50B, addr: ",0);
 	printf("%h",(unsigned int)addr2);
 	void *addr3=kmalloc(70);
-	printf("\nkalloc 2B, addr: ",0);
+	printf("\nkalloc 70B, addr: ",0);
+	printf("%h",(unsigned int)addr3);
+	kfree((unsigned int)addr3);
+	printf("\nkfree 70B, addr: ",0);
 	printf("%h",(unsigned int)addr3);
 }
