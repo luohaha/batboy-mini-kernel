@@ -132,11 +132,13 @@ void exe_cmd(char *todo)
 void show_memory()
 {
 	printf("\n--------------memory-------------------\n",0);
+	printf("code start: ",0);
 	printf("%h",kern_start);
 	printf("\n",0);
+	printf("code end:   ",0);
 	printf("%h",kern_end);
 	printf("\n",0);
-	printf("memory use(KB):  ",0);
+	printf("code's memory use(KB):  ",0);
 	printf("%h",(kern_end-kern_start+1023)/1024);
 	printf("\n",0);
 }
