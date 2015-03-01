@@ -83,12 +83,6 @@ int main()
 	while(1)
 	{
 		asm volatile ("hlt");
-	/*	if(haha==2)
-		{
-			printf("b",0);
-			haha=0;
-		}*/
-		
 	}
 }
 
